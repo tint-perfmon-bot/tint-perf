@@ -1,353 +1,95 @@
 <html>
-  <head>
-    <link rel="icon" type="image/png" href="favicon.png" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      body {
-        overflow-x: hidden;
-        margin: 0 0 0 0;
-        font-family: "Roboto", sans-serif;
-      }
-      .searchbar {
-        background: rgb(184, 184, 184);
-        width: 100%;
-        position: fixed;
-        bottom: 0;
-        margin: 0;
-        padding: 5px;
-      }
-    </style>
-  </head>
 
-  <body>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+<head>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      overflow-x: hidden;
+      margin: 0 0 0 0;
+      font-family: "Roboto", sans-serif;
+    }
 
-    <p>
-      Left click a data point to obtain a link to that graph + change. <br />
-      Ctrl + left click a chart to open a page to that change. <br />
-    </p>
-    <span>Data set:</span>
-    <select name="Data" id="dataset">
-      <option value="2fe6a1a9">AMD Ryzen 7 5700U</option>
-      <option value="3482d2c9">Xeon @ 2.00GHz</option>
-    </select>
+    .searchbar {
+      background: rgb(184, 184, 184, 0.4);
+      width: 100%;
+      position: fixed;
+      bottom: 0;
+      margin: 0;
+      padding: 5px;
+    }
 
-    <p class="searchbar">
-      <span>Search: <input style="width: 300px" id="search" /></span>
-      <span style="float: right; padding-right: 10px">
-        Page automatically updates every 5 minutes
-      </span>
-    </p>
+    .code {
+      font-family: 'Courier New', Courier, monospace;
+    }
 
-    <script>
-      const url_params = new Proxy(
-        {},
-        {
-          get: (_, key) => {
-            const url = new URL(window.location.href);
-            const params = new URLSearchParams(window.location.search);
-            if (key === "hash") {
-              return url.hash ? url.hash.substring(1) : "";
-            }
-            return new URLSearchParams(url.search).get(key);
-          },
-          set: (_, key, value) => {
-            const url = new URL(window.location.href);
-            const params = new URLSearchParams(url.search);
-            var hash = url.hash ? url.hash.substring(1) : "";
-            switch (key) {
-              case "hash":
-                hash = value;
-                break;
-              default:
-                if (value === "") {
-                  params.delete(key);
-                } else {
-                  params.set(key, value);
-                }
-                break;
-            }
-            var new_url = `${location.pathname}?${params}`;
-            if (hash !== "") {
-              new_url += `#${hash}`;
-            }
-            window.history.replaceState("", "", new_url);
-          },
-        }
-      );
+    .chart-title {
+      text-align: center;
+      font-size: 20pt;
+      font-weight: 700;
+    }
 
-      const charts = new Map();
+    .webgpu-chart-label {
+      position: absolute;
+      font-size: small;
+      margin: 5px;
+      white-space: nowrap;
+    }
 
-      const search_params = new URLSearchParams(window.location.search);
-      const dataset_sel = document.querySelector("#dataset");
-      const search_sel = document.querySelector("#search");
+    .webgpu-chart-label-axis-x {
+      transform-origin: left center;
+      transform: rotate(45deg);
+    }
 
-      const search_for = (str) => {
-        search_sel.value = str;
-        search_string = str;
-        url_params.search = str;
-        charts.forEach((chart) => chart.update());
-      };
+    .webgpu-chart-label-axis-y {
+      transform: translateY(50%);
+    }
 
-      const get_or_create = (map, key, create) => {
-        if (map.has(key)) {
-          return map.get(key);
-        }
-        const val = create();
-        map.set(key, val);
-        return val;
-      };
+    .webgpu-chart-tooltip-box {
+      position: absolute;
+      border-radius: 10px;
+      border-color: rgba(100, 100, 100, 0.5);
+      border-width: 1px;
+      border-style: solid;
+    }
 
-      const trim_quotes = (str) => {
-        if (str.startsWith(`"`)) {
-          str = str.substring(1);
-        }
-        if (str.endsWith(`"`)) {
-          str = str.substring(0, str.length - 1);
-        }
-        return str;
-      };
+    .webgpu-chart-tooltip-text {
+      padding: 10px;
+      font-size: 12pt;
+    }
 
-      const format_time = (seconds) => {
-        const nanoseconds = seconds * 1e9;
-        const digits = Math.log10(nanoseconds);
-        if (digits >= 6) {
-          return Math.round(nanoseconds / 10000) / 100 + "ms";
-        }
-        if (digits >= 3) {
-          return Math.round(nanoseconds / 10) / 100 + "μs";
-        }
-        return Math.round(nanoseconds * 10) / 10 + "ns";
-      };
+    .tooltip-title {
+      font-weight: bold;
+    }
 
-      const colors = [
-        {
-          backgroundColor: "rgba(151,187,205,0.2)",
-          borderColor: "rgba(151,187,205,1)",
-        },
-        {
-          backgroundColor: "rgba(247,70,74,0.2)",
-          borderColor: "rgba(247,70,74,1)",
-        },
-        {
-          backgroundColor: "rgba(70,191,189,0.2)",
-          borderColor: "rgba(70,191,189,1)",
-        },
-        {
-          backgroundColor: "rgba(253,180,92,0.2)",
-          borderColor: "rgba(253,180,92,1)",
-        },
-        {
-          backgroundColor: "rgba(220,220,220,0.2)",
-          borderColor: "rgba(220,220,220,1)",
-        },
-        {
-          backgroundColor: "rgba(148,159,177,0.2)",
-          borderColor: "rgba(148,159,177,1)",
-        },
-        {
-          backgroundColor: "rgba(77,83,96,0.2)",
-          borderColor: "rgba(77,83,96,1)",
-        },
-      ];
+  </style>
+</head>
 
-      const new_chart_cfg = () => {
-        return {
-          type: "line",
-          options: {
-            onClick: (e) => {
-              const canvas_pos = Chart.helpers.getRelativePosition(e, e.chart);
-              const data_x = e.chart.scales.x.getValueForPixel(canvas_pos.x);
-              const commit = e.chart.data.labels[data_x];
-              if (e.native.ctrlKey) {
-                const url = `https://dawn.googlesource.com/dawn/+/${commit}`;
-                window.open(url, "_blank");
-              } else {
-                search_for(commit);
-                url_params.hash = e.chart.href_name;
-              }
-            },
-            animations: { numbers: false },
-            parsing: {
-              xAxisKey: "short_hash",
-              yAxisKey: "duration",
-            },
-            scales: {
-              y: {
-                display: true,
-                ticks: {
-                  callback: (value, index, values) => format_time(value),
-                  beginAtZero: true,
-                },
-              },
-            },
-            elements: {
-              point: {
-                radius: (item) => {
-                  const highlight =
-                    search_string !== "" &&
-                    (item.raw.commit.includes(search_string) ||
-                      item.raw.description.includes(search_string));
-                  return highlight ? 10 : 2;
-                },
-                display: true,
-              },
-            },
-            plugins: {
-              tooltip: {
-                callbacks: {
-                  title: (items) =>
-                    `${items
-                      .map(
-                        (item) =>
-                          `${item.dataset.label} - ${item.raw.short_hash}`
-                      )
-                      .join(", ")}`,
-                  label: (item) => {
-                    const out = [
-                      `${item.raw.description}`,
-                      `Date: ${item.raw.date.toDateString()}`,
-                      `Duration: ${format_time(item.raw.duration)}`,
-                    ];
-                    if (item.raw.repeats) {
-                      out.push(`Repeats: ${item.raw.repeats}`);
-                    }
-                    return out;
-                  },
-                },
-              },
-            },
-          },
-        };
-      };
+<body>
+  <p>
+    Left click a data point to obtain a link to that graph + change. <br />
+    Ctrl + left click a chart to open a page to that change. <br />
+  </p>
+  <span>Data set:</span>
+  <select name="Data" id="dataset">
+    <option value="2fe6a1a9">AMD Ryzen 7 5700U</option>
+    <option value="3482d2c9">Xeon @ 2.00GHz</option>
+  </select>
 
-      const split_benchmark_name = (name) => {
-        if (name.startsWith("Castable")) {
-          return ["Castable", name.substring(8)];
-        }
-        if (name.includes("/")) {
-          return name.split("/");
-        }
-        return [name, name];
-      };
+  <div id="charts">
+  </div>
 
-      var dataset = search_params.get("data") || dataset_sel.options[0].value;
-      var search_string = search_params.get("search") || "";
+  <p class="searchbar">
+    <span>Search: <input style="width: 300px" id="search" /></span>
+    <span style="float: right; padding-right: 10px">
+      Page automatically updates every 5 minutes
+    </span>
+  </p>
 
-      const refresh = () => {
-        fetch(
-          `https://raw.githubusercontent.com/tint-perfmon-bot/tint-perf/main/results/${dataset}.json`
-        )
-          .then((response) => response.json())
-          .then((json) => {
-            const systems = new Map();
-            for (const commit of json.Commits) {
-              for (const benchmark of commit.Benchmarks) {
-                const names = split_benchmark_name(benchmark.Name);
-                const system_name = names[0];
-                const benchmark_name = names[1];
-                const benchmarks = get_or_create(
-                  systems,
-                  system_name,
-                  () => new Map()
-                );
-                const data = get_or_create(
-                  benchmarks,
-                  benchmark_name,
-                  () => []
-                );
+  <script src="webgpu-chart.js"></script>
+  <script src="main.js"></script>
+</body>
 
-                if (benchmark.Time == 0) {
-                  // benchmark likely failed.
-                  benchmark.Time = undefined;
-                }
-
-                data.push({
-                  short_hash: commit.Commit.substring(0, 7),
-                  commit: commit.Commit,
-                  description: commit.CommitDescription || "",
-                  date: new Date(commit.CommitTime),
-                  duration: benchmark.Time,
-                  repeats: benchmark.Repeats,
-                });
-              }
-            }
-
-            const dataset_color_indices = new Map();
-
-            const systems_sorted = new Map(
-              [...systems].sort((a, b) => String(a[0]).localeCompare(b[0]))
-            );
-
-            systems_sorted.forEach((benchmarks, system_name) => {
-              const chart = get_or_create(charts, system_name, () => {
-                const canvas = document.createElement("canvas");
-                canvas.id = system_name;
-                canvas.style = "width=100%; height=200";
-                document.body.append(canvas);
-                const cfg = new_chart_cfg();
-                cfg.options.plugins.title = {
-                  display: true,
-                  text: system_name,
-                };
-                const ctx = canvas.getContext("2d");
-                const chart = new Chart(ctx, cfg);
-                chart.href_name = system_name;
-                if (url_params.hash === system_name) {
-                  setTimeout(() => {
-                    canvas.scrollIntoView(true);
-                  }, 1);
-                }
-                return chart;
-              });
-
-              chart.data.datasets = [];
-
-              benchmarks.forEach((data, benchmark_name) => {
-                const col_idx = get_or_create(
-                  dataset_color_indices,
-                  benchmark_name,
-                  () => dataset_color_indices.size % colors.length
-                );
-                chart.data.datasets.push({
-                  label: benchmark_name,
-                  data: data,
-                  backgroundColor: colors[col_idx].backgroundColor,
-                  borderColor: colors[col_idx].borderColor,
-                });
-              });
-              chart.update();
-            });
-
-            document.title = json.System[0].modelName;
-            url_params.data = dataset;
-          })
-          .then(() => setTimeout(refresh, 5 * 60 * 1000)); // refresh every 5 minutes
-      };
-
-      dataset_sel.value = dataset;
-      dataset_sel.onchange = () => {
-        dataset = dataset_sel.value;
-        refresh();
-      };
-      search_for(search_string);
-      search_sel.oninput = () => {
-        search_for(search_sel.value);
-      };
-      window.addEventListener("keydown", function (e) {
-        // ctrl-f
-        if (e.keyCode === 114 || (e.ctrlKey && e.keyCode === 70)) {
-          e.preventDefault();
-          search_sel.value = "";
-          search_sel.focus();
-        }
-      });
-      refresh();
-    </script>
-  </body>
 </html>
