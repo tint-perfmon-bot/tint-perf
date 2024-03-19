@@ -1,13 +1,4 @@
 /// <reference types="@webgpu/types" />
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
     if (kind === "m") throw new TypeError("Private method is not writable");
     if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
@@ -267,47 +258,46 @@ _a = Chart, _Chart_container = new WeakMap(), _Chart_canvas = new WeakMap(), _Ch
             this.redraw();
         });
     }
-}, _Chart_init = function _Chart_init() {
-    return __awaiter(this, void 0, void 0, function* () {
+}, _Chart_init = async function _Chart_init() {
+    if (__classPrivateFieldGet(Chart, _a, "f", _Chart_adapter) === null) {
+        __classPrivateFieldSet(Chart, _a, await navigator.gpu.requestAdapter(), "f", _Chart_adapter);
         if (__classPrivateFieldGet(Chart, _a, "f", _Chart_adapter) === null) {
-            __classPrivateFieldSet(Chart, _a, yield navigator.gpu.requestAdapter(), "f", _Chart_adapter);
-            if (__classPrivateFieldGet(Chart, _a, "f", _Chart_adapter) === null) {
-                console.error('WebGPU is not avaliable');
-                return;
-            }
+            console.error('WebGPU is not avaliable');
+            return;
         }
-        const device = yield __classPrivateFieldGet(Chart, _a, "f", _Chart_adapter).requestDevice();
-        const presentation_format = navigator.gpu.getPreferredCanvasFormat();
-        __classPrivateFieldGet(this, _Chart_context, "f").configure({
-            device,
-            format: presentation_format,
-            alphaMode: 'premultiplied',
-        });
-        const null_bindgroup_layout = device.createBindGroupLayout({
-            label: 'null_bindgroup_layout',
-            entries: [],
-        });
-        const null_bindgroup = device.createBindGroup({
-            label: 'null_bindgroup',
-            layout: null_bindgroup_layout,
-            entries: [],
-        });
-        const samples_to_lines_bind_group_layout = device.createBindGroupLayout({
-            label: 'samples_to_lines_bind_group_layout',
-            entries: [
-                {
-                    binding: 0,
-                    visibility: GPUShaderStage.COMPUTE,
-                    buffer: { type: 'read-only-storage' },
-                },
-                {
-                    binding: 1,
-                    visibility: GPUShaderStage.COMPUTE,
-                    buffer: { type: 'storage' },
-                },
-            ],
-        });
-        const common_wgsl = `
+    }
+    const device = await __classPrivateFieldGet(Chart, _a, "f", _Chart_adapter).requestDevice();
+    const presentation_format = navigator.gpu.getPreferredCanvasFormat();
+    __classPrivateFieldGet(this, _Chart_context, "f").configure({
+        device,
+        format: presentation_format,
+        alphaMode: 'premultiplied',
+    });
+    const null_bindgroup_layout = device.createBindGroupLayout({
+        label: 'null_bindgroup_layout',
+        entries: [],
+    });
+    const null_bindgroup = device.createBindGroup({
+        label: 'null_bindgroup',
+        layout: null_bindgroup_layout,
+        entries: [],
+    });
+    const samples_to_lines_bind_group_layout = device.createBindGroupLayout({
+        label: 'samples_to_lines_bind_group_layout',
+        entries: [
+            {
+                binding: 0,
+                visibility: GPUShaderStage.COMPUTE,
+                buffer: { type: 'read-only-storage' },
+            },
+            {
+                binding: 1,
+                visibility: GPUShaderStage.COMPUTE,
+                buffer: { type: 'storage' },
+            },
+        ],
+    });
+    const common_wgsl = `
 struct LinePoint {
     fine_min : i32,
     fine_max : i32,
@@ -328,42 +318,42 @@ struct DrawInfo {
     dataset_idx : u32,
 };
 `;
-        const view_buffer = device.createBuffer({
-            label: 'view_buffer',
-            size: 0 +
-                kF32Size * 4 + // chart_bounds : vec4f
-                kF32Size * 2 * 4 + // sample_to_chart : mat2x3<f32>
-                kF32Size * 2 * 4 + // chart_to_sample : mat2x3<f32>
-                kF32Size * 2 * 4 + // chart_to_ndc : mat2x3<f32>
-                kU32Size + // highlighted_sample_x : u32
-                kU32Size + // highlighted_dataset_idx : u32
-                kU32Size * 2 + // padding
-                0,
-            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-        });
-        const view_layout = device.createBindGroupLayout({
-            label: 'view_layout',
-            entries: [
-                {
-                    binding: 0,
-                    visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT | GPUShaderStage.COMPUTE,
-                    buffer: { type: 'uniform' },
-                },
-            ],
-        });
-        const view_bind_group = device.createBindGroup({
-            label: 'view_bind_group',
-            layout: view_layout,
-            entries: [{ binding: 0, resource: { buffer: view_buffer } }],
-        });
-        const samples_to_lines_pipeline = device.createComputePipeline({
-            label: 'samples_to_lines_pipeline',
-            layout: device.createPipelineLayout({
-                bindGroupLayouts: [samples_to_lines_bind_group_layout, view_layout],
-            }),
-            compute: {
-                module: device.createShaderModule({
-                    code: `
+    const view_buffer = device.createBuffer({
+        label: 'view_buffer',
+        size: 0 +
+            kF32Size * 4 + // chart_bounds : vec4f
+            kF32Size * 2 * 4 + // sample_to_chart : mat2x3<f32>
+            kF32Size * 2 * 4 + // chart_to_sample : mat2x3<f32>
+            kF32Size * 2 * 4 + // chart_to_ndc : mat2x3<f32>
+            kU32Size + // highlighted_sample_x : u32
+            kU32Size + // highlighted_dataset_idx : u32
+            kU32Size * 2 + // padding
+            0,
+        usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+    });
+    const view_layout = device.createBindGroupLayout({
+        label: 'view_layout',
+        entries: [
+            {
+                binding: 0,
+                visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT | GPUShaderStage.COMPUTE,
+                buffer: { type: 'uniform' },
+            },
+        ],
+    });
+    const view_bind_group = device.createBindGroup({
+        label: 'view_bind_group',
+        layout: view_layout,
+        entries: [{ binding: 0, resource: { buffer: view_buffer } }],
+    });
+    const samples_to_lines_pipeline = device.createComputePipeline({
+        label: 'samples_to_lines_pipeline',
+        layout: device.createPipelineLayout({
+            bindGroupLayouts: [samples_to_lines_bind_group_layout, view_layout],
+        }),
+        compute: {
+            module: device.createShaderModule({
+                code: `
 ${common_wgsl}
 @group(0) @binding(0) var<storage> sample_value : array<f32>;
 @group(0) @binding(1) var<storage, read_write> line_data : LineData;
@@ -388,28 +378,28 @@ fn main(@builtin(global_invocation_id) global_invocation_id : vec3<u32>) {
     }
     line_data[chart_x0] = bounds;
 }`,
-                }),
-                entryPoint: 'main',
-            },
-        });
-        const process_lines_bind_group_layout = device.createBindGroupLayout({
-            label: 'process_lines_bind_group_layout',
-            entries: [
-                {
-                    binding: 0,
-                    visibility: GPUShaderStage.COMPUTE,
-                    buffer: { type: 'storage' },
-                },
-            ],
-        });
-        const process_lines_pipeline = device.createComputePipeline({
-            label: 'process_lines_pipeline',
-            layout: device.createPipelineLayout({
-                bindGroupLayouts: [process_lines_bind_group_layout],
             }),
-            compute: {
-                module: device.createShaderModule({
-                    code: `
+            entryPoint: 'main',
+        },
+    });
+    const process_lines_bind_group_layout = device.createBindGroupLayout({
+        label: 'process_lines_bind_group_layout',
+        entries: [
+            {
+                binding: 0,
+                visibility: GPUShaderStage.COMPUTE,
+                buffer: { type: 'storage' },
+            },
+        ],
+    });
+    const process_lines_pipeline = device.createComputePipeline({
+        label: 'process_lines_pipeline',
+        layout: device.createPipelineLayout({
+            bindGroupLayouts: [process_lines_bind_group_layout],
+        }),
+        compute: {
+            module: device.createShaderModule({
+                code: `
 ${common_wgsl}
 @group(0) @binding(0) var<storage, read_write> line_data : LineData;
 
@@ -441,54 +431,54 @@ fn main(@builtin(global_invocation_id) global_invocation_id : vec3<u32>) {
     line_data[x].course_min = val_min;
     line_data[x].course_max = val_max;
 }`,
-                }),
-                entryPoint: 'main',
-            },
-        });
-        const draw_grid_buffer = device.createBuffer({
-            label: 'draw_grid_buffer',
-            size: kF32Size * 4,
-            usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.UNIFORM,
-        });
-        const targets = [
-            {
-                format: presentation_format,
-                blend: {
-                    color: {
-                        operation: 'add',
-                        srcFactor: 'one',
-                        dstFactor: 'one-minus-src-alpha',
-                    },
-                    alpha: {
-                        operation: 'add',
-                        srcFactor: 'one',
-                        dstFactor: 'one-minus-src-alpha',
-                    },
-                },
-            },
-        ];
-        const draw_grid_bind_group_layout = device.createBindGroupLayout({
-            label: 'draw_grid_bind_group_layout',
-            entries: [
-                {
-                    binding: 0,
-                    visibility: GPUShaderStage.FRAGMENT,
-                    buffer: { type: 'uniform' },
-                },
-            ],
-        });
-        const draw_grid_bind_group = device.createBindGroup({
-            layout: draw_grid_bind_group_layout,
-            entries: [{ binding: 0, resource: { buffer: draw_grid_buffer } }],
-        });
-        const draw_grid_pipeline = device.createRenderPipeline({
-            label: 'draw_grid_pipeline',
-            layout: device.createPipelineLayout({
-                bindGroupLayouts: [draw_grid_bind_group_layout, view_layout],
             }),
-            vertex: {
-                module: device.createShaderModule({
-                    code: `
+            entryPoint: 'main',
+        },
+    });
+    const draw_grid_buffer = device.createBuffer({
+        label: 'draw_grid_buffer',
+        size: kF32Size * 4,
+        usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.UNIFORM,
+    });
+    const targets = [
+        {
+            format: presentation_format,
+            blend: {
+                color: {
+                    operation: 'add',
+                    srcFactor: 'one',
+                    dstFactor: 'one-minus-src-alpha',
+                },
+                alpha: {
+                    operation: 'add',
+                    srcFactor: 'one',
+                    dstFactor: 'one-minus-src-alpha',
+                },
+            },
+        },
+    ];
+    const draw_grid_bind_group_layout = device.createBindGroupLayout({
+        label: 'draw_grid_bind_group_layout',
+        entries: [
+            {
+                binding: 0,
+                visibility: GPUShaderStage.FRAGMENT,
+                buffer: { type: 'uniform' },
+            },
+        ],
+    });
+    const draw_grid_bind_group = device.createBindGroup({
+        layout: draw_grid_bind_group_layout,
+        entries: [{ binding: 0, resource: { buffer: draw_grid_buffer } }],
+    });
+    const draw_grid_pipeline = device.createRenderPipeline({
+        label: 'draw_grid_pipeline',
+        layout: device.createPipelineLayout({
+            bindGroupLayouts: [draw_grid_bind_group_layout, view_layout],
+        }),
+        vertex: {
+            module: device.createShaderModule({
+                code: `
 ${common_wgsl}
 @group(1) @binding(0) var<uniform> view : View;
 
@@ -504,12 +494,12 @@ fn main(@builtin(vertex_index) vertex_index : u32) -> Out {
     let pos_ndc = vec3(pos_chart, 1) * view.chart_to_ndc;
     return Out(vec4(pos_ndc, 0, 1), pos_chart);
 }`,
-                }),
-                entryPoint: 'main',
-            },
-            fragment: {
-                module: device.createShaderModule({
-                    code: `
+            }),
+            entryPoint: 'main',
+        },
+        fragment: {
+            module: device.createShaderModule({
+                code: `
 struct Grid {
     major : vec2<f32>,
     minor : vec2<f32>,
@@ -530,39 +520,39 @@ fn main(@location(0) pos_chart : vec2<f32>) -> @location(0) vec4f {
     return vec4(0, 0, 0, max(max(major, minor), axis));
 }
 `,
-                }),
-                entryPoint: 'main',
-                targets,
-            },
-            primitive: {
-                topology: 'triangle-strip',
-            },
-        });
-        const draw_line_bind_group_layout = device.createBindGroupLayout({
-            label: 'draw_line_bind_group_layout',
-            entries: [
-                {
-                    // LineData
-                    binding: 0,
-                    visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
-                    buffer: { type: 'read-only-storage' },
-                },
-                {
-                    // DrawInfo
-                    binding: 1,
-                    visibility: GPUShaderStage.FRAGMENT,
-                    buffer: { type: 'uniform' },
-                },
-            ],
-        });
-        const draw_line_pipeline = device.createRenderPipeline({
-            label: 'draw_line_pipeline',
-            layout: device.createPipelineLayout({
-                bindGroupLayouts: [draw_line_bind_group_layout, view_layout],
             }),
-            vertex: {
-                module: device.createShaderModule({
-                    code: `
+            entryPoint: 'main',
+            targets,
+        },
+        primitive: {
+            topology: 'triangle-strip',
+        },
+    });
+    const draw_line_bind_group_layout = device.createBindGroupLayout({
+        label: 'draw_line_bind_group_layout',
+        entries: [
+            {
+                // LineData
+                binding: 0,
+                visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
+                buffer: { type: 'read-only-storage' },
+            },
+            {
+                // DrawInfo
+                binding: 1,
+                visibility: GPUShaderStage.FRAGMENT,
+                buffer: { type: 'uniform' },
+            },
+        ],
+    });
+    const draw_line_pipeline = device.createRenderPipeline({
+        label: 'draw_line_pipeline',
+        layout: device.createPipelineLayout({
+            bindGroupLayouts: [draw_line_bind_group_layout, view_layout],
+        }),
+        vertex: {
+            module: device.createShaderModule({
+                code: `
 ${common_wgsl}
 @group(0) @binding(0) var<storage> line_data : LineData;
 @group(1) @binding(0) var<uniform> view : View;
@@ -585,12 +575,12 @@ fn main(@builtin(vertex_index) vertex_index : u32) -> Out {
     let pos_ndc = vec3(chart_pos, 1) * view.chart_to_ndc;
     return Out(vec4(pos_ndc, 0, 1), chart_pos);
 }`,
-                }),
-                entryPoint: 'main',
-            },
-            fragment: {
-                module: device.createShaderModule({
-                    code: `
+            }),
+            entryPoint: 'main',
+        },
+        fragment: {
+            module: device.createShaderModule({
+                code: `
 ${common_wgsl}
 @group(0) @binding(0) var<storage> line_data : LineData;
 @group(0) @binding(1) var<uniform> draw : DrawInfo;
@@ -630,39 +620,39 @@ fn length_squared(a : vec2<f32>, b : vec2<f32>) -> f32 {
     return dot(d, d);
 }
 `,
-                }),
-                entryPoint: 'main',
-                targets,
-            },
-            primitive: {
-                topology: 'triangle-strip',
-            },
-        });
-        const draw_points_bind_group_layout = device.createBindGroupLayout({
-            label: 'draw_points_bind_group_layout',
-            entries: [
-                {
-                    // samples
-                    binding: 0,
-                    visibility: GPUShaderStage.VERTEX,
-                    buffer: { type: 'read-only-storage' },
-                },
-                {
-                    // draw
-                    binding: 1,
-                    visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
-                    buffer: { type: 'uniform' },
-                },
-            ],
-        });
-        const draw_points_pipeline = device.createRenderPipeline({
-            label: 'draw_points_pipeline',
-            layout: device.createPipelineLayout({
-                bindGroupLayouts: [draw_points_bind_group_layout, view_layout],
             }),
-            vertex: {
-                module: device.createShaderModule({
-                    code: `
+            entryPoint: 'main',
+            targets,
+        },
+        primitive: {
+            topology: 'triangle-strip',
+        },
+    });
+    const draw_points_bind_group_layout = device.createBindGroupLayout({
+        label: 'draw_points_bind_group_layout',
+        entries: [
+            {
+                // samples
+                binding: 0,
+                visibility: GPUShaderStage.VERTEX,
+                buffer: { type: 'read-only-storage' },
+            },
+            {
+                // draw
+                binding: 1,
+                visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
+                buffer: { type: 'uniform' },
+            },
+        ],
+    });
+    const draw_points_pipeline = device.createRenderPipeline({
+        label: 'draw_points_pipeline',
+        layout: device.createPipelineLayout({
+            bindGroupLayouts: [draw_points_bind_group_layout, view_layout],
+        }),
+        vertex: {
+            module: device.createShaderModule({
+                code: `
 ${common_wgsl}
 @group(0) @binding(0) var<storage> samples : array<f32>;
 @group(0) @binding(1) var<uniform> draw : DrawInfo;
@@ -695,12 +685,12 @@ fn main(@builtin(vertex_index) vertex_index : u32) -> Out {
     let pos_ndc = vec3(pos_chart, 1) * view.chart_to_ndc;
     return Out(vec4(pos_ndc, 0, 1), quad_offset, pos_chart);
 }`,
-                }),
-                entryPoint: 'main',
-            },
-            fragment: {
-                module: device.createShaderModule({
-                    code: `
+            }),
+            entryPoint: 'main',
+        },
+        fragment: {
+            module: device.createShaderModule({
+                code: `
 ${common_wgsl}
 @group(0) @binding(1) var<uniform> draw : DrawInfo;
 @group(1) @binding(0) var<uniform> view : View;
@@ -714,33 +704,33 @@ fn main(@location(0) quad : vec2<f32>, @location(1) chart_pos : vec2<f32>) -> @l
     return select(vec4f(), color, in_bounds);
 }
 `,
-                }),
-                entryPoint: 'main',
-                targets,
-            },
-            primitive: {
-                topology: 'triangle-list',
-            },
-        });
-        const draw_chart_rect_pipeline_layout = device.createBindGroupLayout({
-            label: 'draw_chart_rect_pipeline_layout',
-            entries: [
-                {
-                    // RectInfo
-                    binding: 0,
-                    visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
-                    buffer: { type: 'uniform' },
-                },
-            ],
-        });
-        const draw_rect_pipeline = device.createRenderPipeline({
-            label: 'draw_rect_pipeline',
-            layout: device.createPipelineLayout({
-                bindGroupLayouts: [draw_chart_rect_pipeline_layout, view_layout],
             }),
-            vertex: {
-                module: device.createShaderModule({
-                    code: `
+            entryPoint: 'main',
+            targets,
+        },
+        primitive: {
+            topology: 'triangle-list',
+        },
+    });
+    const draw_chart_rect_pipeline_layout = device.createBindGroupLayout({
+        label: 'draw_chart_rect_pipeline_layout',
+        entries: [
+            {
+                // RectInfo
+                binding: 0,
+                visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
+                buffer: { type: 'uniform' },
+            },
+        ],
+    });
+    const draw_rect_pipeline = device.createRenderPipeline({
+        label: 'draw_rect_pipeline',
+        layout: device.createPipelineLayout({
+            bindGroupLayouts: [draw_chart_rect_pipeline_layout, view_layout],
+        }),
+        vertex: {
+            module: device.createShaderModule({
+                code: `
 ${common_wgsl}
 struct RectInfo {
   rect  : vec4f, // in canvas space
@@ -762,12 +752,12 @@ fn main(@builtin(vertex_index) vertex_index : u32) -> @builtin(position) vec4f {
     let pos_chart = rect.rect.xy + rect.rect.zw * quad_offset - view.chart_bounds.xy;
     return vec4(vec3(pos_chart, 1) * view.chart_to_ndc, 0, 1);
 }`,
-                }),
-                entryPoint: 'main',
-            },
-            fragment: {
-                module: device.createShaderModule({
-                    code: `
+            }),
+            entryPoint: 'main',
+        },
+        fragment: {
+            module: device.createShaderModule({
+                code: `
 ${common_wgsl}
 struct RectInfo {
   rect  : vec4f, // in canvas space
@@ -781,47 +771,46 @@ fn main() -> @location(0) vec4f {
     return rect.color;
 }
 `,
-                }),
-                entryPoint: 'main',
-                targets,
-            },
-            primitive: {
-                topology: 'triangle-list',
-            },
-        });
-        const draw_rect_buffer = device.createBuffer({
-            size: 2 * 4 * kF32Size,
-            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-        });
-        const draw_rect_bind_group = device.createBindGroup({
-            layout: draw_chart_rect_pipeline_layout,
-            entries: [{ binding: 0, resource: { buffer: draw_rect_buffer } }],
-        });
-        __classPrivateFieldSet(this, _Chart_gpu, {
-            device,
-            null_bindgroup_layout,
-            null_bindgroup,
-            samples_to_lines_bind_group_layout,
-            samples_to_lines_pipeline,
-            process_lines_bind_group_layout,
-            process_lines_pipeline,
-            draw_grid_buffer,
-            draw_grid_pipeline,
-            draw_grid_bind_group,
-            draw_line_pipeline,
-            draw_line_bind_group_layout,
-            draw_points_pipeline,
-            draw_points_bind_group_layout,
-            draw_rect_pipeline,
-            draw_chart_rect_pipeline_layout,
-            draw_rect_bind_group,
-            draw_rect_buffer,
-            view_bind_group,
-            view_buffer,
-            view_changed: true,
-        }, "f");
-        this.update();
+            }),
+            entryPoint: 'main',
+            targets,
+        },
+        primitive: {
+            topology: 'triangle-list',
+        },
     });
+    const draw_rect_buffer = device.createBuffer({
+        size: 2 * 4 * kF32Size,
+        usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+    });
+    const draw_rect_bind_group = device.createBindGroup({
+        layout: draw_chart_rect_pipeline_layout,
+        entries: [{ binding: 0, resource: { buffer: draw_rect_buffer } }],
+    });
+    __classPrivateFieldSet(this, _Chart_gpu, {
+        device,
+        null_bindgroup_layout,
+        null_bindgroup,
+        samples_to_lines_bind_group_layout,
+        samples_to_lines_pipeline,
+        process_lines_bind_group_layout,
+        process_lines_pipeline,
+        draw_grid_buffer,
+        draw_grid_pipeline,
+        draw_grid_bind_group,
+        draw_line_pipeline,
+        draw_line_bind_group_layout,
+        draw_points_pipeline,
+        draw_points_bind_group_layout,
+        draw_rect_pipeline,
+        draw_chart_rect_pipeline_layout,
+        draw_rect_bind_group,
+        draw_rect_buffer,
+        view_bind_group,
+        view_buffer,
+        view_changed: true,
+    }, "f");
+    this.update();
 }, _Chart_updateViewport = function _Chart_updateViewport() {
     if (__classPrivateFieldGet(this, _Chart_data, "f") === null) {
         throw new Error('#data is null');

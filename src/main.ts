@@ -141,15 +141,26 @@ const split_benchmark_name = (name: string) => {
 
 var dataset = url_params.dataset || dataset_sel.options[0].value;
 
+
 const refresh = () => {
-  fetch(`results/${dataset}.json`)
+  const months_to_view = 12;
+
+  const now = new Date();
+  let year = now.getFullYear();
+  let month = now.getMonth()+1;
+
+  type SystemName = string;
+  type BenchmarkName = string;
+  type Datasets = Map<BenchmarkName, Dataset<DataPoint>>;
+  const systems = new Map<SystemName, Datasets>();
+  const benchmark_colors = new Map<BenchmarkName, Color>();
+
+  let requests_remaining = months_to_view;
+
+  for (let i = 0; i < 12; i++) {
+    fetch(`results/${dataset}-${year}-${month.toString().padStart(2, '0')}.json`)
     .then((response) => response.json())
     .then((json) => {
-      type SystemName = string;
-      type BenchmarkName = string;
-      type Datasets = Map<BenchmarkName, Dataset<DataPoint>>;
-      const systems = new Map<SystemName, Datasets>();
-      const benchmark_colors = new Map<BenchmarkName, Color>();
       for (const commit of json.Commits) {
         for (const benchmark of commit.Benchmarks) {
           const names = split_benchmark_name(benchmark.Name);
@@ -184,41 +195,55 @@ const refresh = () => {
         }
       }
 
-      const systems_sorted = [...systems.keys()].sort((a, b) =>
-        String(a[0]).localeCompare(b[0])
-      );
+      if (--requests_remaining === 0) {
+        const systems_sorted = [...systems.keys()].sort((a, b) =>
+          String(a[0]).localeCompare(b[0])
+        );
 
-      for (const system_name of systems_sorted) {
-        const chart = get_or_create(charts, system_name, () => {
-          const title = document.createElement('p');
-          title.id = system_name;
-          title.textContent = system_name;
-          title.classList.add('chart-title');
-          title.onclick = () => {
-            url_params.system = system_name;
-          };
-          container.append(title);
+        for (const system_name of systems_sorted) {
+          const chart = get_or_create(charts, system_name, () => {
+            const title = document.createElement('p');
+            title.id = system_name;
+            title.textContent = system_name;
+            title.classList.add('chart-title');
+            title.onclick = () => {
+              url_params.system = system_name;
+            };
+            container.append(title);
 
-          const element = document.createElement('div');
-          element.style.boxSizing = 'border-box';
-          element.style.width = '100%';
-          element.style.height = '100%';
-          container.append(element);
+            const element = document.createElement('div');
+            element.style.boxSizing = 'border-box';
+            element.style.width = '100%';
+            element.style.height = '100%';
+            container.append(element);
 
-          if (url_params.system === system_name) {
-            setTimeout(() => title.scrollIntoView(true), 1);
+            if (url_params.system === system_name) {
+              setTimeout(() => title.scrollIntoView(true), 1);
+            }
+            return new Chart<DataPoint>(element, config);
+          });
+
+          const datasets = systems.get(system_name) as Datasets;
+          for (const benchmark of datasets.values()) {
+            benchmark.samples.sort((a, b) => a.date.getTime() - b.date.getTime());
           }
-          return new Chart<DataPoint>(element, config);
-        });
 
-        const datasets = systems.get(system_name) as Datasets;
-        chart.datasets = [...datasets.values()];
-        chart.update();
+          chart.datasets = [...datasets.values()];
+          chart.update();
+        }
+
+        document.title = json.System[0].modelName;
+        setTimeout(refresh, 5 * 60 * 1000); // refresh every 5 minutes
       }
+    });
 
-      document.title = json.System[0].modelName;
-    })
-    .then(() => setTimeout(refresh, 5 * 60 * 1000)); // refresh every 5 minutes
+    month--;
+    if (month == 0) {
+      year--;
+      month = 12;
+    }
+  }
+
 };
 
 dataset_sel.value = dataset;

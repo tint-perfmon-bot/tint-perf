@@ -112,62 +112,79 @@ const split_benchmark_name = (name) => {
 };
 var dataset = url_params.dataset || dataset_sel.options[0].value;
 const refresh = () => {
-    fetch(`results/${dataset}.json`)
-        .then((response) => response.json())
-        .then((json) => {
-        const systems = new Map();
-        const benchmark_colors = new Map();
-        for (const commit of json.Commits) {
-            for (const benchmark of commit.Benchmarks) {
-                const names = split_benchmark_name(benchmark.Name);
-                const system_name = names[0];
-                const benchmark_name = trim_quotes(names[1]);
-                const datasets = get_or_create(systems, system_name, () => new Map());
-                const color = get_or_create(benchmark_colors, benchmark_name, () => colors[benchmark_colors.size % colors.length]);
-                const dataset = get_or_create(datasets, benchmark_name, () => {
-                    return { label: benchmark_name, color, samples: [] };
-                });
-                if (benchmark.Time == 0) {
-                    benchmark.Time = undefined;
+    const months_to_view = 12;
+    const now = new Date();
+    let year = now.getFullYear();
+    let month = now.getMonth() + 1;
+    const systems = new Map();
+    const benchmark_colors = new Map();
+    let requests_remaining = months_to_view;
+    for (let i = 0; i < 12; i++) {
+        fetch(`results/${dataset}-${year}-${month.toString().padStart(2, '0')}.json`)
+            .then((response) => response.json())
+            .then((json) => {
+            for (const commit of json.Commits) {
+                for (const benchmark of commit.Benchmarks) {
+                    const names = split_benchmark_name(benchmark.Name);
+                    const system_name = names[0];
+                    const benchmark_name = trim_quotes(names[1]);
+                    const datasets = get_or_create(systems, system_name, () => new Map());
+                    const color = get_or_create(benchmark_colors, benchmark_name, () => colors[benchmark_colors.size % colors.length]);
+                    const dataset = get_or_create(datasets, benchmark_name, () => {
+                        return { label: benchmark_name, color, samples: [] };
+                    });
+                    if (benchmark.Time == 0) {
+                        benchmark.Time = undefined;
+                    }
+                    dataset.samples.push({
+                        short_hash: commit.Commit.substring(0, 7),
+                        commit: commit.Commit,
+                        description: commit.CommitDescription || '',
+                        date: new Date(commit.CommitTime),
+                        duration: benchmark.Time,
+                        repeats: benchmark.Repeats,
+                    });
                 }
-                dataset.samples.push({
-                    short_hash: commit.Commit.substring(0, 7),
-                    commit: commit.Commit,
-                    description: commit.CommitDescription || '',
-                    date: new Date(commit.CommitTime),
-                    duration: benchmark.Time,
-                    repeats: benchmark.Repeats,
-                });
             }
-        }
-        const systems_sorted = [...systems.keys()].sort((a, b) => String(a[0]).localeCompare(b[0]));
-        for (const system_name of systems_sorted) {
-            const chart = get_or_create(charts, system_name, () => {
-                const title = document.createElement('p');
-                title.id = system_name;
-                title.textContent = system_name;
-                title.classList.add('chart-title');
-                title.onclick = () => {
-                    url_params.system = system_name;
-                };
-                container.append(title);
-                const element = document.createElement('div');
-                element.style.boxSizing = 'border-box';
-                element.style.width = '100%';
-                element.style.height = '100%';
-                container.append(element);
-                if (url_params.system === system_name) {
-                    setTimeout(() => title.scrollIntoView(true), 1);
+            if (--requests_remaining === 0) {
+                const systems_sorted = [...systems.keys()].sort((a, b) => String(a[0]).localeCompare(b[0]));
+                for (const system_name of systems_sorted) {
+                    const chart = get_or_create(charts, system_name, () => {
+                        const title = document.createElement('p');
+                        title.id = system_name;
+                        title.textContent = system_name;
+                        title.classList.add('chart-title');
+                        title.onclick = () => {
+                            url_params.system = system_name;
+                        };
+                        container.append(title);
+                        const element = document.createElement('div');
+                        element.style.boxSizing = 'border-box';
+                        element.style.width = '100%';
+                        element.style.height = '100%';
+                        container.append(element);
+                        if (url_params.system === system_name) {
+                            setTimeout(() => title.scrollIntoView(true), 1);
+                        }
+                        return new Chart(element, config);
+                    });
+                    const datasets = systems.get(system_name);
+                    for (const benchmark of datasets.values()) {
+                        benchmark.samples.sort((a, b) => a.date.getTime() - b.date.getTime());
+                    }
+                    chart.datasets = [...datasets.values()];
+                    chart.update();
                 }
-                return new Chart(element, config);
-            });
-            const datasets = systems.get(system_name);
-            chart.datasets = [...datasets.values()];
-            chart.update();
+                document.title = json.System[0].modelName;
+                setTimeout(refresh, 5 * 60 * 1000); // refresh every 5 minutes
+            }
+        });
+        month--;
+        if (month == 0) {
+            year--;
+            month = 12;
         }
-        document.title = json.System[0].modelName;
-    })
-        .then(() => setTimeout(refresh, 5 * 60 * 1000)); // refresh every 5 minutes
+    }
 };
 dataset_sel.value = dataset;
 dataset_sel.onchange = () => {
