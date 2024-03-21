@@ -2323,6 +2323,885 @@
   ],
   "Commits": [
     {
+      "Commit": "55e5dc7aedae9b9f9dcde94292291cce598aef4a",
+      "CommitTime": "2024-03-15T11:18:21Z",
+      "CommitDescription": "Fix dangling pointer in ProgrammableEncoder",
+      "Benchmarks": [
+        {
+          "Name": "AccessParser",
+          "Time": 1.2e-7
+        },
+        {
+          "Name": "AddressSpaceParser",
+          "Time": 0.000001028
+        },
+        {
+          "Name": "AttributeParser",
+          "Time": 0.000003187
+        },
+        {
+          "Name": "BuiltinTypeParser",
+          "Time": 0.00003125
+        },
+        {
+          "Name": "BuiltinValueParser",
+          "Time": 0.000002257
+        },
+        {
+          "Name": "CastableLargeSwitch",
+          "Time": 8.1e-8
+        },
+        {
+          "Name": "CastableMediumSwitch",
+          "Time": 3e-8
+        },
+        {
+          "Name": "CastableSmallSwitch",
+          "Time": 7e-9
+        },
+        {
+          "Name": "ChromiumDiagnosticRuleParser",
+          "Time": 2.3e-8
+        },
+        {
+          "Name": "CoreDiagnosticRuleParser",
+          "Time": 2.4e-8
+        },
+        {
+          "Name": "DiagnosticSeverityParser",
+          "Time": 1.98e-7
+        },
+        {
+          "Name": "ExtensionParser",
+          "Time": 9.23e-7
+        },
+        {
+          "Name": "GenerateGLSL/\"Fruit/Apple.frag.wgsl\"",
+          "Time": 0.269181431
+        },
+        {
+          "Name": "GenerateGLSL/\"Fruit/Apple.vert.wgsl\"",
+          "Time": 0.009705204
+        },
+        {
+          "Name": "GenerateGLSL/\"Fruit/Banana.frag.wgsl\"",
+          "Time": 0.260057584
+        },
+        {
+          "Name": "GenerateGLSL/\"Fruit/Banana.vert.wgsl\"",
+          "Time": 0.012134125
+        },
+        {
+          "Name": "GenerateGLSL/\"Fruit/Cherry.frag.wgsl\"",
+          "Time": 0.245382035
+        },
+        {
+          "Name": "GenerateGLSL/\"Fruit/Cherry.vert.wgsl\"",
+          "Time": 0.00919327
+        },
+        {
+          "Name": "GenerateGLSL/\"Fruit/Guava.frag.wgsl\"",
+          "Time": 0.251161702
+        },
+        {
+          "Name": "GenerateGLSL/\"Fruit/Guava.vert.wgsl\"",
+          "Time": 0.009165274
+        },
+        {
+          "Name": "GenerateGLSL/\"Fruit/Kiwi.frag.wgsl\"",
+          "Time": 0.247061118
+        },
+        {
+          "Name": "GenerateGLSL/\"Fruit/Kiwi.vert.wgsl\"",
+          "Time": 0.009713912
+        },
+        {
+          "Name": "GenerateGLSL/\"Fruit/Lemon.frag.wgsl\"",
+          "Time": 0.246903452
+        },
+        {
+          "Name": "GenerateGLSL/\"Fruit/Lemon.vert.wgsl\"",
+          "Time": 0.009704074
+        },
+        {
+          "Name": "GenerateGLSL/\"Fruit/Lychee.frag.wgsl\"",
+          "Time": 0.248886343
+        },
+        {
+          "Name": "GenerateGLSL/\"Fruit/Lychee.vert.wgsl\"",
+          "Time": 0.00918017
+        },
+        {
+          "Name": "GenerateGLSL/\"Fruit/Orange.frag.wgsl\"",
+          "Time": 0.227568262
+        },
+        {
+          "Name": "GenerateGLSL/\"Fruit/Orange.vert.wgsl\"",
+          "Time": 0.012388036
+        },
+        {
+          "Name": "GenerateGLSL/\"Vegetables/Beetroot.spv\"",
+          "Time": 0.122239378
+        },
+        {
+          "Name": "GenerateGLSL/\"Vegetables/Broccoli.spv\"",
+          "Time": 0.119486908
+        },
+        {
+          "Name": "GenerateGLSL/\"Vegetables/Habanero.spv\"",
+          "Time": 0.123565883
+        },
+        {
+          "Name": "GenerateGLSL/\"Vegetables/Kale.spv\"",
+          "Time": 0.124047389
+        },
+        {
+          "Name": "GenerateGLSL/\"Vegetables/Rhubarb.spv\"",
+          "Time": 0.117831362
+        },
+        {
+          "Name": "GenerateGLSL/\"Vegetables/Turnip.spv\"",
+          "Time": 0.112671001
+        },
+        {
+          "Name": "GenerateGLSL/\"atan2-const-eval.wgsl\"",
+          "Time": 0.077601166
+        },
+        {
+          "Name": "GenerateGLSL/\"cluster-lights.wgsl\"",
+          "Time": 0.005555858
+        },
+        {
+          "Name": "GenerateGLSL/\"metaball-isosurface.wgsl\"",
+          "Time": 0.01417529
+        },
+        {
+          "Name": "GenerateGLSL/\"particles.wgsl\"",
+          "Time": 0.02740081
+        },
+        {
+          "Name": "GenerateGLSL/\"shadow-fragment.wgsl\"",
+          "Time": 0.00268497
+        },
+        {
+          "Name": "GenerateGLSL/\"skinned-shadowed-pbr-fragment.wgsl\"",
+          "Time": 0.027832901
+        },
+        {
+          "Name": "GenerateGLSL/\"skinned-shadowed-pbr-vertex.wgsl\"",
+          "Time": 0.00593051
+        },
+        {
+          "Name": "GenerateHLSL/\"Fruit/Apple.frag.wgsl\"",
+          "Time": 0.209970357
+        },
+        {
+          "Name": "GenerateHLSL/\"Fruit/Apple.vert.wgsl\"",
+          "Time": 0.007074808
+        },
+        {
+          "Name": "GenerateHLSL/\"Fruit/Banana.frag.wgsl\"",
+          "Time": 0.203497454
+        },
+        {
+          "Name": "GenerateHLSL/\"Fruit/Banana.vert.wgsl\"",
+          "Time": 0.008829787
+        },
+        {
+          "Name": "GenerateHLSL/\"Fruit/Cherry.frag.wgsl\"",
+          "Time": 0.190410733
+        },
+        {
+          "Name": "GenerateHLSL/\"Fruit/Cherry.vert.wgsl\"",
+          "Time": 0.006679736
+        },
+        {
+          "Name": "GenerateHLSL/\"Fruit/Guava.frag.wgsl\"",
+          "Time": 0.191815779
+        },
+        {
+          "Name": "GenerateHLSL/\"Fruit/Guava.vert.wgsl\"",
+          "Time": 0.00667874
+        },
+        {
+          "Name": "GenerateHLSL/\"Fruit/Kiwi.frag.wgsl\"",
+          "Time": 0.188931262
+        },
+        {
+          "Name": "GenerateHLSL/\"Fruit/Kiwi.vert.wgsl\"",
+          "Time": 0.007070886
+        },
+        {
+          "Name": "GenerateHLSL/\"Fruit/Lemon.frag.wgsl\"",
+          "Time": 0.188844334
+        },
+        {
+          "Name": "GenerateHLSL/\"Fruit/Lemon.vert.wgsl\"",
+          "Time": 0.007089022
+        },
+        {
+          "Name": "GenerateHLSL/\"Fruit/Lychee.frag.wgsl\"",
+          "Time": 0.192399147
+        },
+        {
+          "Name": "GenerateHLSL/\"Fruit/Lychee.vert.wgsl\"",
+          "Time": 0.006681198
+        },
+        {
+          "Name": "GenerateHLSL/\"Fruit/Orange.frag.wgsl\"",
+          "Time": 0.172859763
+        },
+        {
+          "Name": "GenerateHLSL/\"Fruit/Orange.vert.wgsl\"",
+          "Time": 0.009073951
+        },
+        {
+          "Name": "GenerateHLSL/\"Vegetables/Beetroot.spv\"",
+          "Time": 0.093594985
+        },
+        {
+          "Name": "GenerateHLSL/\"Vegetables/Broccoli.spv\"",
+          "Time": 0.091380181
+        },
+        {
+          "Name": "GenerateHLSL/\"Vegetables/Habanero.spv\"",
+          "Time": 0.094670847
+        },
+        {
+          "Name": "GenerateHLSL/\"Vegetables/Kale.spv\"",
+          "Time": 0.095193544
+        },
+        {
+          "Name": "GenerateHLSL/\"Vegetables/Rhubarb.spv\"",
+          "Time": 0.090229021
+        },
+        {
+          "Name": "GenerateHLSL/\"Vegetables/Turnip.spv\"",
+          "Time": 0.084654185
+        },
+        {
+          "Name": "GenerateHLSL/\"atan2-const-eval.wgsl\"",
+          "Time": 0.050260723
+        },
+        {
+          "Name": "GenerateHLSL/\"cluster-lights.wgsl\"",
+          "Time": 0.007400604
+        },
+        {
+          "Name": "GenerateHLSL/\"metaball-isosurface.wgsl\"",
+          "Time": 0.013504037
+        },
+        {
+          "Name": "GenerateHLSL/\"particles.wgsl\"",
+          "Time": 0.013769039
+        },
+        {
+          "Name": "GenerateHLSL/\"shadow-fragment.wgsl\"",
+          "Time": 0.001928718
+        },
+        {
+          "Name": "GenerateHLSL/\"skinned-shadowed-pbr-fragment.wgsl\"",
+          "Time": 0.02444093
+        },
+        {
+          "Name": "GenerateHLSL/\"skinned-shadowed-pbr-vertex.wgsl\"",
+          "Time": 0.005631048
+        },
+        {
+          "Name": "GenerateMSL/\"Fruit/Apple.frag.wgsl\"",
+          "Time": 0.229731833
+        },
+        {
+          "Name": "GenerateMSL/\"Fruit/Apple.vert.wgsl\"",
+          "Time": 0.007169046
+        },
+        {
+          "Name": "GenerateMSL/\"Fruit/Banana.frag.wgsl\"",
+          "Time": 0.218123296
+        },
+        {
+          "Name": "GenerateMSL/\"Fruit/Banana.vert.wgsl\"",
+          "Time": 0.008948821
+        },
+        {
+          "Name": "GenerateMSL/\"Fruit/Cherry.frag.wgsl\"",
+          "Time": 0.210737704
+        },
+        {
+          "Name": "GenerateMSL/\"Fruit/Cherry.vert.wgsl\"",
+          "Time": 0.006785904
+        },
+        {
+          "Name": "GenerateMSL/\"Fruit/Guava.frag.wgsl\"",
+          "Time": 0.210907183
+        },
+        {
+          "Name": "GenerateMSL/\"Fruit/Guava.vert.wgsl\"",
+          "Time": 0.006794957
+        },
+        {
+          "Name": "GenerateMSL/\"Fruit/Kiwi.frag.wgsl\"",
+          "Time": 0.207801243
+        },
+        {
+          "Name": "GenerateMSL/\"Fruit/Kiwi.vert.wgsl\"",
+          "Time": 0.007163055
+        },
+        {
+          "Name": "GenerateMSL/\"Fruit/Lemon.frag.wgsl\"",
+          "Time": 0.208269477
+        },
+        {
+          "Name": "GenerateMSL/\"Fruit/Lemon.vert.wgsl\"",
+          "Time": 0.00716897
+        },
+        {
+          "Name": "GenerateMSL/\"Fruit/Lychee.frag.wgsl\"",
+          "Time": 0.210740269
+        },
+        {
+          "Name": "GenerateMSL/\"Fruit/Lychee.vert.wgsl\"",
+          "Time": 0.006791227
+        },
+        {
+          "Name": "GenerateMSL/\"Fruit/Orange.frag.wgsl\"",
+          "Time": 0.190434493
+        },
+        {
+          "Name": "GenerateMSL/\"Fruit/Orange.vert.wgsl\"",
+          "Time": 0.010338076
+        },
+        {
+          "Name": "GenerateMSL/\"Vegetables/Beetroot.spv\"",
+          "Time": 0.115792244
+        },
+        {
+          "Name": "GenerateMSL/\"Vegetables/Broccoli.spv\"",
+          "Time": 0.113259034
+        },
+        {
+          "Name": "GenerateMSL/\"Vegetables/Habanero.spv\"",
+          "Time": 0.117162123
+        },
+        {
+          "Name": "GenerateMSL/\"Vegetables/Kale.spv\"",
+          "Time": 0.117697956
+        },
+        {
+          "Name": "GenerateMSL/\"Vegetables/Rhubarb.spv\"",
+          "Time": 0.111448977
+        },
+        {
+          "Name": "GenerateMSL/\"Vegetables/Turnip.spv\"",
+          "Time": 0.106858769
+        },
+        {
+          "Name": "GenerateMSL/\"atan2-const-eval.wgsl\"",
+          "Time": 0.051054128
+        },
+        {
+          "Name": "GenerateMSL/\"cluster-lights.wgsl\"",
+          "Time": 0.007610492
+        },
+        {
+          "Name": "GenerateMSL/\"metaball-isosurface.wgsl\"",
+          "Time": 0.013829258
+        },
+        {
+          "Name": "GenerateMSL/\"particles.wgsl\"",
+          "Time": 0.017215435
+        },
+        {
+          "Name": "GenerateMSL/\"shadow-fragment.wgsl\"",
+          "Time": 0.00230634
+        },
+        {
+          "Name": "GenerateMSL/\"skinned-shadowed-pbr-fragment.wgsl\"",
+          "Time": 0.026858253
+        },
+        {
+          "Name": "GenerateMSL/\"skinned-shadowed-pbr-vertex.wgsl\"",
+          "Time": 0.005932427
+        },
+        {
+          "Name": "GenerateSPIRV/\"Fruit/Apple.frag.wgsl\"",
+          "Time": 0.212373665
+        },
+        {
+          "Name": "GenerateSPIRV/\"Fruit/Apple.vert.wgsl\"",
+          "Time": 0.007335004
+        },
+        {
+          "Name": "GenerateSPIRV/\"Fruit/Banana.frag.wgsl\"",
+          "Time": 0.199018001
+        },
+        {
+          "Name": "GenerateSPIRV/\"Fruit/Banana.vert.wgsl\"",
+          "Time": 0.009184365
+        },
+        {
+          "Name": "GenerateSPIRV/\"Fruit/Cherry.frag.wgsl\"",
+          "Time": 0.192160725
+        },
+        {
+          "Name": "GenerateSPIRV/\"Fruit/Cherry.vert.wgsl\"",
+          "Time": 0.006917468
+        },
+        {
+          "Name": "GenerateSPIRV/\"Fruit/Guava.frag.wgsl\"",
+          "Time": 0.187034746
+        },
+        {
+          "Name": "GenerateSPIRV/\"Fruit/Guava.vert.wgsl\"",
+          "Time": 0.006915875
+        },
+        {
+          "Name": "GenerateSPIRV/\"Fruit/Kiwi.frag.wgsl\"",
+          "Time": 0.185238037
+        },
+        {
+          "Name": "GenerateSPIRV/\"Fruit/Kiwi.vert.wgsl\"",
+          "Time": 0.007316895
+        },
+        {
+          "Name": "GenerateSPIRV/\"Fruit/Lemon.frag.wgsl\"",
+          "Time": 0.190110572
+        },
+        {
+          "Name": "GenerateSPIRV/\"Fruit/Lemon.vert.wgsl\"",
+          "Time": 0.007323105
+        },
+        {
+          "Name": "GenerateSPIRV/\"Fruit/Lychee.frag.wgsl\"",
+          "Time": 0.191793672
+        },
+        {
+          "Name": "GenerateSPIRV/\"Fruit/Lychee.vert.wgsl\"",
+          "Time": 0.006918862
+        },
+        {
+          "Name": "GenerateSPIRV/\"Fruit/Orange.frag.wgsl\"",
+          "Time": 0.173587521
+        },
+        {
+          "Name": "GenerateSPIRV/\"Fruit/Orange.vert.wgsl\"",
+          "Time": 0.009429082
+        },
+        {
+          "Name": "GenerateSPIRV/\"Vegetables/Beetroot.spv\"",
+          "Time": 0.096420862
+        },
+        {
+          "Name": "GenerateSPIRV/\"Vegetables/Broccoli.spv\"",
+          "Time": 0.095191904
+        },
+        {
+          "Name": "GenerateSPIRV/\"Vegetables/Habanero.spv\"",
+          "Time": 0.097435691
+        },
+        {
+          "Name": "GenerateSPIRV/\"Vegetables/Kale.spv\"",
+          "Time": 0.097876601
+        },
+        {
+          "Name": "GenerateSPIRV/\"Vegetables/Rhubarb.spv\"",
+          "Time": 0.093998573
+        },
+        {
+          "Name": "GenerateSPIRV/\"Vegetables/Turnip.spv\"",
+          "Time": 0.087060334
+        },
+        {
+          "Name": "GenerateSPIRV/\"atan2-const-eval.wgsl\"",
+          "Time": 0.057817232
+        },
+        {
+          "Name": "GenerateSPIRV/\"cluster-lights.wgsl\"",
+          "Time": 0.007279636
+        },
+        {
+          "Name": "GenerateSPIRV/\"metaball-isosurface.wgsl\"",
+          "Time": 0.014544757
+        },
+        {
+          "Name": "GenerateSPIRV/\"particles.wgsl\"",
+          "Time": 0.016193171
+        },
+        {
+          "Name": "GenerateSPIRV/\"shadow-fragment.wgsl\"",
+          "Time": 0.001994825
+        },
+        {
+          "Name": "GenerateSPIRV/\"skinned-shadowed-pbr-fragment.wgsl\"",
+          "Time": 0.025193853
+        },
+        {
+          "Name": "GenerateSPIRV/\"skinned-shadowed-pbr-vertex.wgsl\"",
+          "Time": 0.004219951
+        },
+        {
+          "Name": "GenerateSPIRV_UseIR/\"Fruit/Apple.frag.wgsl\"",
+          "Time": 0.02394026
+        },
+        {
+          "Name": "GenerateSPIRV_UseIR/\"Fruit/Apple.vert.wgsl\"",
+          "Time": 0.000985591
+        },
+        {
+          "Name": "GenerateSPIRV_UseIR/\"Fruit/Banana.frag.wgsl\"",
+          "Time": 0.023298625
+        },
+        {
+          "Name": "GenerateSPIRV_UseIR/\"Fruit/Banana.vert.wgsl\"",
+          "Time": 0.001279874
+        },
+        {
+          "Name": "GenerateSPIRV_UseIR/\"Fruit/Cherry.frag.wgsl\"",
+          "Time": 0.024168052
+        },
+        {
+          "Name": "GenerateSPIRV_UseIR/\"Fruit/Cherry.vert.wgsl\"",
+          "Time": 0.000928309
+        },
+        {
+          "Name": "GenerateSPIRV_UseIR/\"Fruit/Guava.frag.wgsl\"",
+          "Time": 0.02423778
+        },
+        {
+          "Name": "GenerateSPIRV_UseIR/\"Fruit/Guava.vert.wgsl\"",
+          "Time": 0.000930884
+        },
+        {
+          "Name": "GenerateSPIRV_UseIR/\"Fruit/Kiwi.frag.wgsl\"",
+          "Time": 0.023623452
+        },
+        {
+          "Name": "GenerateSPIRV_UseIR/\"Fruit/Kiwi.vert.wgsl\"",
+          "Time": 0.000986222
+        },
+        {
+          "Name": "GenerateSPIRV_UseIR/\"Fruit/Lemon.frag.wgsl\"",
+          "Time": 0.023667204
+        },
+        {
+          "Name": "GenerateSPIRV_UseIR/\"Fruit/Lemon.vert.wgsl\"",
+          "Time": 0.000985891
+        },
+        {
+          "Name": "GenerateSPIRV_UseIR/\"Fruit/Lychee.frag.wgsl\"",
+          "Time": 0.02417608
+        },
+        {
+          "Name": "GenerateSPIRV_UseIR/\"Fruit/Lychee.vert.wgsl\"",
+          "Time": 0.000927775
+        },
+        {
+          "Name": "GenerateSPIRV_UseIR/\"Fruit/Orange.frag.wgsl\"",
+          "Time": 0.022193033
+        },
+        {
+          "Name": "GenerateSPIRV_UseIR/\"Fruit/Orange.vert.wgsl\"",
+          "Time": 0.001326836
+        },
+        {
+          "Name": "GenerateSPIRV_UseIR/\"Vegetables/Beetroot.spv\"",
+          "Time": 0.01448075
+        },
+        {
+          "Name": "GenerateSPIRV_UseIR/\"Vegetables/Broccoli.spv\"",
+          "Time": 0.014259731
+        },
+        {
+          "Name": "GenerateSPIRV_UseIR/\"Vegetables/Habanero.spv\"",
+          "Time": 0.014662369
+        },
+        {
+          "Name": "GenerateSPIRV_UseIR/\"Vegetables/Kale.spv\"",
+          "Time": 0.014682285
+        },
+        {
+          "Name": "GenerateSPIRV_UseIR/\"Vegetables/Rhubarb.spv\"",
+          "Time": 0.014121423
+        },
+        {
+          "Name": "GenerateSPIRV_UseIR/\"Vegetables/Turnip.spv\"",
+          "Time": 0.014346031
+        },
+        {
+          "Name": "GenerateSPIRV_UseIR/\"atan2-const-eval.wgsl\"",
+          "Time": 0.008167
+        },
+        {
+          "Name": "GenerateSPIRV_UseIR/\"cluster-lights.wgsl\"",
+          "Time": 0.000832113
+        },
+        {
+          "Name": "GenerateSPIRV_UseIR/\"metaball-isosurface.wgsl\"",
+          "Time": 0.001284121
+        },
+        {
+          "Name": "GenerateSPIRV_UseIR/\"particles.wgsl\"",
+          "Time": 0.001243383
+        },
+        {
+          "Name": "GenerateSPIRV_UseIR/\"shadow-fragment.wgsl\"",
+          "Time": 0.000257636
+        },
+        {
+          "Name": "GenerateSPIRV_UseIR/\"skinned-shadowed-pbr-fragment.wgsl\"",
+          "Time": 0.002405315
+        },
+        {
+          "Name": "GenerateSPIRV_UseIR/\"skinned-shadowed-pbr-vertex.wgsl\"",
+          "Time": 0.000667396
+        },
+        {
+          "Name": "GenerateWGSL/\"Fruit/Apple.frag.wgsl\"",
+          "Time": 0.007190296
+        },
+        {
+          "Name": "GenerateWGSL/\"Fruit/Apple.vert.wgsl\"",
+          "Time": 0.000299353
+        },
+        {
+          "Name": "GenerateWGSL/\"Fruit/Banana.frag.wgsl\"",
+          "Time": 0.006903829
+        },
+        {
+          "Name": "GenerateWGSL/\"Fruit/Banana.vert.wgsl\"",
+          "Time": 0.000372252
+        },
+        {
+          "Name": "GenerateWGSL/\"Fruit/Cherry.frag.wgsl\"",
+          "Time": 0.007109643
+        },
+        {
+          "Name": "GenerateWGSL/\"Fruit/Cherry.vert.wgsl\"",
+          "Time": 0.00029621
+        },
+        {
+          "Name": "GenerateWGSL/\"Fruit/Guava.frag.wgsl\"",
+          "Time": 0.007172786
+        },
+        {
+          "Name": "GenerateWGSL/\"Fruit/Guava.vert.wgsl\"",
+          "Time": 0.000295057
+        },
+        {
+          "Name": "GenerateWGSL/\"Fruit/Kiwi.frag.wgsl\"",
+          "Time": 0.007062981
+        },
+        {
+          "Name": "GenerateWGSL/\"Fruit/Kiwi.vert.wgsl\"",
+          "Time": 0.000298636
+        },
+        {
+          "Name": "GenerateWGSL/\"Fruit/Lemon.frag.wgsl\"",
+          "Time": 0.007008486
+        },
+        {
+          "Name": "GenerateWGSL/\"Fruit/Lemon.vert.wgsl\"",
+          "Time": 0.000298002
+        },
+        {
+          "Name": "GenerateWGSL/\"Fruit/Lychee.frag.wgsl\"",
+          "Time": 0.007131518
+        },
+        {
+          "Name": "GenerateWGSL/\"Fruit/Lychee.vert.wgsl\"",
+          "Time": 0.000294818
+        },
+        {
+          "Name": "GenerateWGSL/\"Fruit/Orange.frag.wgsl\"",
+          "Time": 0.006705364
+        },
+        {
+          "Name": "GenerateWGSL/\"Fruit/Orange.vert.wgsl\"",
+          "Time": 0.000393702
+        },
+        {
+          "Name": "GenerateWGSL/\"Vegetables/Beetroot.spv\"",
+          "Time": 0.003004059
+        },
+        {
+          "Name": "GenerateWGSL/\"Vegetables/Broccoli.spv\"",
+          "Time": 0.002959642
+        },
+        {
+          "Name": "GenerateWGSL/\"Vegetables/Habanero.spv\"",
+          "Time": 0.003018626
+        },
+        {
+          "Name": "GenerateWGSL/\"Vegetables/Kale.spv\"",
+          "Time": 0.003081145
+        },
+        {
+          "Name": "GenerateWGSL/\"Vegetables/Rhubarb.spv\"",
+          "Time": 0.002918078
+        },
+        {
+          "Name": "GenerateWGSL/\"Vegetables/Turnip.spv\"",
+          "Time": 0.002981869
+        },
+        {
+          "Name": "GenerateWGSL/\"atan2-const-eval.wgsl\"",
+          "Time": 0.01599687
+        },
+        {
+          "Name": "GenerateWGSL/\"cluster-lights.wgsl\"",
+          "Time": 0.000175132
+        },
+        {
+          "Name": "GenerateWGSL/\"metaball-isosurface.wgsl\"",
+          "Time": 0.000328153
+        },
+        {
+          "Name": "GenerateWGSL/\"particles.wgsl\"",
+          "Time": 0.000317368
+        },
+        {
+          "Name": "GenerateWGSL/\"shadow-fragment.wgsl\"",
+          "Time": 0.000105439
+        },
+        {
+          "Name": "GenerateWGSL/\"skinned-shadowed-pbr-fragment.wgsl\"",
+          "Time": 0.000852849
+        },
+        {
+          "Name": "GenerateWGSL/\"skinned-shadowed-pbr-vertex.wgsl\"",
+          "Time": 0.000131734
+        },
+        {
+          "Name": "InterpolationSamplingParser",
+          "Time": 1.64e-7
+        },
+        {
+          "Name": "InterpolationTypeParser",
+          "Time": 1.25e-7
+        },
+        {
+          "Name": "ParseWGSL/\"Fruit/Apple.frag.wgsl\"",
+          "Time": 0.036519009
+        },
+        {
+          "Name": "ParseWGSL/\"Fruit/Apple.vert.wgsl\"",
+          "Time": 0.001449236
+        },
+        {
+          "Name": "ParseWGSL/\"Fruit/Banana.frag.wgsl\"",
+          "Time": 0.035402276
+        },
+        {
+          "Name": "ParseWGSL/\"Fruit/Banana.vert.wgsl\"",
+          "Time": 0.001850736
+        },
+        {
+          "Name": "ParseWGSL/\"Fruit/Cherry.frag.wgsl\"",
+          "Time": 0.036832521
+        },
+        {
+          "Name": "ParseWGSL/\"Fruit/Cherry.vert.wgsl\"",
+          "Time": 0.0013732
+        },
+        {
+          "Name": "ParseWGSL/\"Fruit/Guava.frag.wgsl\"",
+          "Time": 0.036826324
+        },
+        {
+          "Name": "ParseWGSL/\"Fruit/Guava.vert.wgsl\"",
+          "Time": 0.001365273
+        },
+        {
+          "Name": "ParseWGSL/\"Fruit/Kiwi.frag.wgsl\"",
+          "Time": 0.036287589
+        },
+        {
+          "Name": "ParseWGSL/\"Fruit/Kiwi.vert.wgsl\"",
+          "Time": 0.001447333
+        },
+        {
+          "Name": "ParseWGSL/\"Fruit/Lemon.frag.wgsl\"",
+          "Time": 0.036285442
+        },
+        {
+          "Name": "ParseWGSL/\"Fruit/Lemon.vert.wgsl\"",
+          "Time": 0.001448897
+        },
+        {
+          "Name": "ParseWGSL/\"Fruit/Lychee.frag.wgsl\"",
+          "Time": 0.036820998
+        },
+        {
+          "Name": "ParseWGSL/\"Fruit/Lychee.vert.wgsl\"",
+          "Time": 0.001368605
+        },
+        {
+          "Name": "ParseWGSL/\"Fruit/Orange.frag.wgsl\"",
+          "Time": 0.03428595
+        },
+        {
+          "Name": "ParseWGSL/\"Fruit/Orange.vert.wgsl\"",
+          "Time": 0.001921794
+        },
+        {
+          "Name": "ParseWGSL/\"Vegetables/Beetroot.spv\"",
+          "Time": 0.015492391
+        },
+        {
+          "Name": "ParseWGSL/\"Vegetables/Broccoli.spv\"",
+          "Time": 0.015226707
+        },
+        {
+          "Name": "ParseWGSL/\"Vegetables/Habanero.spv\"",
+          "Time": 0.015675493
+        },
+        {
+          "Name": "ParseWGSL/\"Vegetables/Kale.spv\"",
+          "Time": 0.015701259
+        },
+        {
+          "Name": "ParseWGSL/\"Vegetables/Rhubarb.spv\"",
+          "Time": 0.015042637
+        },
+        {
+          "Name": "ParseWGSL/\"Vegetables/Turnip.spv\"",
+          "Time": 0.015527692
+        },
+        {
+          "Name": "ParseWGSL/\"atan2-const-eval.wgsl\"",
+          "Time": 0.015687405
+        },
+        {
+          "Name": "ParseWGSL/\"cluster-lights.wgsl\"",
+          "Time": 0.000951926
+        },
+        {
+          "Name": "ParseWGSL/\"metaball-isosurface.wgsl\"",
+          "Time": 0.001852217
+        },
+        {
+          "Name": "ParseWGSL/\"particles.wgsl\"",
+          "Time": 0.001335534
+        },
+        {
+          "Name": "ParseWGSL/\"shadow-fragment.wgsl\"",
+          "Time": 0.000376817
+        },
+        {
+          "Name": "ParseWGSL/\"skinned-shadowed-pbr-fragment.wgsl\"",
+          "Time": 0.003342495
+        },
+        {
+          "Name": "ParseWGSL/\"skinned-shadowed-pbr-vertex.wgsl\"",
+          "Time": 0.000628978
+        },
+        {
+          "Name": "TexelFormatParser",
+          "Time": 0.000003892
+        }
+      ]
+    },
+    {
       "Commit": "5c592f75a31261cb41af4a1858d689007d124607",
       "CommitTime": "2024-03-15T11:38:50Z",
       "CommitDescription": "Roll Depot Tools from beb48f193f4d to 79e1a7174c79 (2 revisions)",
