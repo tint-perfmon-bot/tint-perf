@@ -2323,6 +2323,349 @@
   ],
   "Commits": [
     {
+      "Commit": "655db070220ab631f58104db52038ea20ffe7a58",
+      "CommitTime": "2022-09-01T17:35:39Z",
+      "CommitDescription": "tint/sem: Rename sem::Manager to TypeManager",
+      "Benchmarks": [
+        {
+          "Name": "CastableLargeSwitch",
+          "Time": 5.4e-8
+        },
+        {
+          "Name": "CastableMediumSwitch",
+          "Time": 4.6e-8
+        },
+        {
+          "Name": "CastableSmallSwitch",
+          "Time": 7e-9
+        },
+        {
+          "Name": "ExtensionParser",
+          "Time": 1.82e-7
+        },
+        {
+          "Name": "GenerateGLSL/\"animometer.wgsl\"",
+          "Time": 0.004619512
+        },
+        {
+          "Name": "GenerateGLSL/\"atan2-const-eval.wgsl\"",
+          "Time": 0.087524496
+        },
+        {
+          "Name": "GenerateGLSL/\"bloom-vertical-blur.wgsl\"",
+          "Time": 0.005055546
+        },
+        {
+          "Name": "GenerateGLSL/\"cluster-lights.wgsl\"",
+          "Time": 0.006225248
+        },
+        {
+          "Name": "GenerateGLSL/\"empty.wgsl\"",
+          "Time": 0
+        },
+        {
+          "Name": "GenerateGLSL/\"metaball-isosurface.wgsl\"",
+          "Time": 0.015395972
+        },
+        {
+          "Name": "GenerateGLSL/\"particles.wgsl\"",
+          "Time": 0.023985696
+        },
+        {
+          "Name": "GenerateGLSL/\"shadow-fragment.wgsl\"",
+          "Time": 0.003873087
+        },
+        {
+          "Name": "GenerateGLSL/\"simple-compute.wgsl\"",
+          "Time": 0.000813837
+        },
+        {
+          "Name": "GenerateGLSL/\"simple-fragment.wgsl\"",
+          "Time": 0.000696653
+        },
+        {
+          "Name": "GenerateGLSL/\"simple-vertex.wgsl\"",
+          "Time": 0.000904306
+        },
+        {
+          "Name": "GenerateGLSL/\"skinned-shadowed-pbr-fragment.wgsl\"",
+          "Time": 0.032854512
+        },
+        {
+          "Name": "GenerateGLSL/\"skinned-shadowed-pbr-vertex.wgsl\"",
+          "Time": 0.006529124
+        },
+        {
+          "Name": "GenerateHLSL/\"animometer.wgsl\"",
+          "Time": 0.003696681
+        },
+        {
+          "Name": "GenerateHLSL/\"atan2-const-eval.wgsl\"",
+          "Time": 0.082279148
+        },
+        {
+          "Name": "GenerateHLSL/\"bloom-vertical-blur.wgsl\"",
+          "Time": 0.004886638
+        },
+        {
+          "Name": "GenerateHLSL/\"cluster-lights.wgsl\"",
+          "Time": 0.00830163
+        },
+        {
+          "Name": "GenerateHLSL/\"empty.wgsl\"",
+          "Time": 0.00006441
+        },
+        {
+          "Name": "GenerateHLSL/\"metaball-isosurface.wgsl\"",
+          "Time": 0.014839296
+        },
+        {
+          "Name": "GenerateHLSL/\"particles.wgsl\"",
+          "Time": 0.015361313
+        },
+        {
+          "Name": "GenerateHLSL/\"shadow-fragment.wgsl\"",
+          "Time": 0.003634417
+        },
+        {
+          "Name": "GenerateHLSL/\"simple-compute.wgsl\"",
+          "Time": 0.000874583
+        },
+        {
+          "Name": "GenerateHLSL/\"simple-fragment.wgsl\"",
+          "Time": 0.000629152
+        },
+        {
+          "Name": "GenerateHLSL/\"simple-vertex.wgsl\"",
+          "Time": 0.000654027
+        },
+        {
+          "Name": "GenerateHLSL/\"skinned-shadowed-pbr-fragment.wgsl\"",
+          "Time": 0.031214879
+        },
+        {
+          "Name": "GenerateHLSL/\"skinned-shadowed-pbr-vertex.wgsl\"",
+          "Time": 0.006131448
+        },
+        {
+          "Name": "GenerateMSL/\"animometer.wgsl\"",
+          "Time": 0.002858372
+        },
+        {
+          "Name": "GenerateMSL/\"atan2-const-eval.wgsl\"",
+          "Time": 0.059840818
+        },
+        {
+          "Name": "GenerateMSL/\"bloom-vertical-blur.wgsl\"",
+          "Time": 0.003731376
+        },
+        {
+          "Name": "GenerateMSL/\"cluster-lights.wgsl\"",
+          "Time": 0.005928334
+        },
+        {
+          "Name": "GenerateMSL/\"empty.wgsl\"",
+          "Time": 0.000036908
+        },
+        {
+          "Name": "GenerateMSL/\"metaball-isosurface.wgsl\"",
+          "Time": 0.011168404
+        },
+        {
+          "Name": "GenerateMSL/\"particles.wgsl\"",
+          "Time": 0.011413882
+        },
+        {
+          "Name": "GenerateMSL/\"shadow-fragment.wgsl\"",
+          "Time": 0.002830162
+        },
+        {
+          "Name": "GenerateMSL/\"simple-compute.wgsl\"",
+          "Time": 0.000596377
+        },
+        {
+          "Name": "GenerateMSL/\"simple-fragment.wgsl\"",
+          "Time": 0.000530401
+        },
+        {
+          "Name": "GenerateMSL/\"simple-vertex.wgsl\"",
+          "Time": 0.000547828
+        },
+        {
+          "Name": "GenerateMSL/\"skinned-shadowed-pbr-fragment.wgsl\"",
+          "Time": 0.024321779
+        },
+        {
+          "Name": "GenerateMSL/\"skinned-shadowed-pbr-vertex.wgsl\"",
+          "Time": 0.004568488
+        },
+        {
+          "Name": "GenerateSPIRV/\"animometer.wgsl\"",
+          "Time": 0.002624055
+        },
+        {
+          "Name": "GenerateSPIRV/\"atan2-const-eval.wgsl\"",
+          "Time": 0.059124244
+        },
+        {
+          "Name": "GenerateSPIRV/\"bloom-vertical-blur.wgsl\"",
+          "Time": 0.003557594
+        },
+        {
+          "Name": "GenerateSPIRV/\"cluster-lights.wgsl\"",
+          "Time": 0.006775531
+        },
+        {
+          "Name": "GenerateSPIRV/\"empty.wgsl\"",
+          "Time": 0.000074803
+        },
+        {
+          "Name": "GenerateSPIRV/\"metaball-isosurface.wgsl\"",
+          "Time": 0.012235679
+        },
+        {
+          "Name": "GenerateSPIRV/\"particles.wgsl\"",
+          "Time": 0.011934285
+        },
+        {
+          "Name": "GenerateSPIRV/\"shadow-fragment.wgsl\"",
+          "Time": 0.002979197
+        },
+        {
+          "Name": "GenerateSPIRV/\"simple-compute.wgsl\"",
+          "Time": 0.00056362
+        },
+        {
+          "Name": "GenerateSPIRV/\"simple-fragment.wgsl\"",
+          "Time": 0.00044006
+        },
+        {
+          "Name": "GenerateSPIRV/\"simple-vertex.wgsl\"",
+          "Time": 0.000496037
+        },
+        {
+          "Name": "GenerateSPIRV/\"skinned-shadowed-pbr-fragment.wgsl\"",
+          "Time": 0.02640815
+        },
+        {
+          "Name": "GenerateSPIRV/\"skinned-shadowed-pbr-vertex.wgsl\"",
+          "Time": 0.004524102
+        },
+        {
+          "Name": "GenerateWGSL/\"animometer.wgsl\"",
+          "Time": 0.000088746
+        },
+        {
+          "Name": "GenerateWGSL/\"atan2-const-eval.wgsl\"",
+          "Time": 0.011970344
+        },
+        {
+          "Name": "GenerateWGSL/\"bloom-vertical-blur.wgsl\"",
+          "Time": 0.000089853
+        },
+        {
+          "Name": "GenerateWGSL/\"cluster-lights.wgsl\"",
+          "Time": 0.000181615
+        },
+        {
+          "Name": "GenerateWGSL/\"empty.wgsl\"",
+          "Time": 0.000001861
+        },
+        {
+          "Name": "GenerateWGSL/\"metaball-isosurface.wgsl\"",
+          "Time": 0.000326682
+        },
+        {
+          "Name": "GenerateWGSL/\"particles.wgsl\"",
+          "Time": 0.000281401
+        },
+        {
+          "Name": "GenerateWGSL/\"shadow-fragment.wgsl\"",
+          "Time": 0.000090505
+        },
+        {
+          "Name": "GenerateWGSL/\"simple-compute.wgsl\"",
+          "Time": 0.000014841
+        },
+        {
+          "Name": "GenerateWGSL/\"simple-fragment.wgsl\"",
+          "Time": 0.000013731
+        },
+        {
+          "Name": "GenerateWGSL/\"simple-vertex.wgsl\"",
+          "Time": 0.000013776
+        },
+        {
+          "Name": "GenerateWGSL/\"skinned-shadowed-pbr-fragment.wgsl\"",
+          "Time": 0.00072831
+        },
+        {
+          "Name": "GenerateWGSL/\"skinned-shadowed-pbr-vertex.wgsl\"",
+          "Time": 0.00013186
+        },
+        {
+          "Name": "ParseWGSL/\"animometer.wgsl\"",
+          "Time": 0.000497518
+        },
+        {
+          "Name": "ParseWGSL/\"atan2-const-eval.wgsl\"",
+          "Time": 0.020062038
+        },
+        {
+          "Name": "ParseWGSL/\"bloom-vertical-blur.wgsl\"",
+          "Time": 0.000671664
+        },
+        {
+          "Name": "ParseWGSL/\"cluster-lights.wgsl\"",
+          "Time": 0.001341831
+        },
+        {
+          "Name": "ParseWGSL/\"empty.wgsl\"",
+          "Time": 0.000002286
+        },
+        {
+          "Name": "ParseWGSL/\"metaball-isosurface.wgsl\"",
+          "Time": 0.002591967
+        },
+        {
+          "Name": "ParseWGSL/\"particles.wgsl\"",
+          "Time": 0.001870154
+        },
+        {
+          "Name": "ParseWGSL/\"shadow-fragment.wgsl\"",
+          "Time": 0.000514434
+        },
+        {
+          "Name": "ParseWGSL/\"simple-compute.wgsl\"",
+          "Time": 0.000093631
+        },
+        {
+          "Name": "ParseWGSL/\"simple-fragment.wgsl\"",
+          "Time": 0.000060198
+        },
+        {
+          "Name": "ParseWGSL/\"simple-vertex.wgsl\"",
+          "Time": 0.000065055
+        },
+        {
+          "Name": "ParseWGSL/\"skinned-shadowed-pbr-fragment.wgsl\"",
+          "Time": 0.004378299
+        },
+        {
+          "Name": "ParseWGSL/\"skinned-shadowed-pbr-vertex.wgsl\"",
+          "Time": 0.000865748
+        },
+        {
+          "Name": "StorageClassParser",
+          "Time": 6.1e-7
+        },
+        {
+          "Name": "TexelFormatParser",
+          "Time": 0.000002706
+        }
+      ]
+    },
+    {
       "Commit": "efa5d3e3d3198f0ea259e3f09618f1b0f630988f",
       "CommitTime": "2022-09-01T17:59:09Z",
       "CommitDescription": "Roll SwiftShader from f0db6df92f88 to 78cfdcddd8c7 (2 revisions)",
