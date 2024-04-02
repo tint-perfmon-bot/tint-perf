@@ -118,11 +118,45 @@ const refresh = () => {
     let month = now.getMonth() + 1;
     const systems = new Map();
     const benchmark_colors = new Map();
+    const data_loaded = () => {
+        if (--requests_remaining > 0) {
+            return;
+        }
+        const systems_sorted = [...systems.keys()].sort((a, b) => String(a[0]).localeCompare(b[0]));
+        for (const system_name of systems_sorted) {
+            const chart = get_or_create(charts, system_name, () => {
+                const title = document.createElement('p');
+                title.id = system_name;
+                title.textContent = system_name;
+                title.classList.add('chart-title');
+                title.onclick = () => {
+                    url_params.system = system_name;
+                };
+                container.append(title);
+                const element = document.createElement('div');
+                element.style.boxSizing = 'border-box';
+                element.style.width = '100%';
+                element.style.height = '100%';
+                container.append(element);
+                if (url_params.system === system_name) {
+                    setTimeout(() => title.scrollIntoView(true), 1);
+                }
+                return new Chart(element, config);
+            });
+            const datasets = systems.get(system_name);
+            for (const benchmark of datasets.values()) {
+                benchmark.samples.sort((a, b) => a.date.getTime() - b.date.getTime());
+            }
+            chart.datasets = [...datasets.values()];
+            chart.update();
+        }
+        setTimeout(refresh, 5 * 60 * 1000); // refresh every 5 minutes
+    };
     let requests_remaining = months_to_view;
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < months_to_view; i++) {
         fetch(`results/${dataset}-${year}-${month.toString().padStart(2, '0')}.json`)
-            .then((response) => response.json())
-            .then((json) => {
+            .then(response => response.json())
+            .then(json => {
             for (const commit of json.Commits) {
                 for (const benchmark of commit.Benchmarks) {
                     const names = split_benchmark_name(benchmark.Name);
@@ -146,38 +180,10 @@ const refresh = () => {
                     });
                 }
             }
-            if (--requests_remaining === 0) {
-                const systems_sorted = [...systems.keys()].sort((a, b) => String(a[0]).localeCompare(b[0]));
-                for (const system_name of systems_sorted) {
-                    const chart = get_or_create(charts, system_name, () => {
-                        const title = document.createElement('p');
-                        title.id = system_name;
-                        title.textContent = system_name;
-                        title.classList.add('chart-title');
-                        title.onclick = () => {
-                            url_params.system = system_name;
-                        };
-                        container.append(title);
-                        const element = document.createElement('div');
-                        element.style.boxSizing = 'border-box';
-                        element.style.width = '100%';
-                        element.style.height = '100%';
-                        container.append(element);
-                        if (url_params.system === system_name) {
-                            setTimeout(() => title.scrollIntoView(true), 1);
-                        }
-                        return new Chart(element, config);
-                    });
-                    const datasets = systems.get(system_name);
-                    for (const benchmark of datasets.values()) {
-                        benchmark.samples.sort((a, b) => a.date.getTime() - b.date.getTime());
-                    }
-                    chart.datasets = [...datasets.values()];
-                    chart.update();
-                }
-                document.title = json.System[0].modelName;
-                setTimeout(refresh, 5 * 60 * 1000); // refresh every 5 minutes
-            }
+            data_loaded();
+        })
+            .catch(error => {
+            data_loaded();
         });
         month--;
         if (month == 0) {

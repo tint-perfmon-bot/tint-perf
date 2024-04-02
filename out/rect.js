@@ -1,5 +1,5 @@
 import { Point } from './math.js';
-export default class Rect {
+class Rect {
     constructor(args) {
         this.t = args.t;
         this.r = args.r;
@@ -37,4 +37,5 @@ export default class Rect {
     }
 }
 Rect.zero = new Rect({ t: 0, r: 0, b: 0, l: 0 });
+export default Rect;
 //# sourceMappingURL=rect.js.map

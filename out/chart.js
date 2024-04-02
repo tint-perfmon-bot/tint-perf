@@ -28,7 +28,7 @@ function get_or_create(map, key, create) {
     map.set(key, val);
     return val;
 }
-export default class Chart {
+class Chart {
     constructor(container, config) {
         _Chart_instances.add(this);
         this.datasets = [];
@@ -150,7 +150,7 @@ export default class Chart {
                 size: 0 +
                     kF32Size * 4 + // color : vec4f,
                     kU32Size + // dataset_idx : u32,
-                    12,
+                    12, // padding
                 usage: GPUBufferUsage.UNIFORM,
                 mappedAtCreation: true,
             });
@@ -259,14 +259,14 @@ _a = Chart, _Chart_container = new WeakMap(), _Chart_canvas = new WeakMap(), _Ch
         });
     }
 }, _Chart_init = async function _Chart_init() {
-    if (__classPrivateFieldGet(Chart, _a, "f", _Chart_adapter) === null) {
-        __classPrivateFieldSet(Chart, _a, await navigator.gpu.requestAdapter(), "f", _Chart_adapter);
-        if (__classPrivateFieldGet(Chart, _a, "f", _Chart_adapter) === null) {
+    if (__classPrivateFieldGet(_a, _a, "f", _Chart_adapter) === null) {
+        __classPrivateFieldSet(_a, _a, await navigator.gpu.requestAdapter(), "f", _Chart_adapter);
+        if (__classPrivateFieldGet(_a, _a, "f", _Chart_adapter) === null) {
             console.error('WebGPU is not avaliable');
             return;
         }
     }
-    const device = await __classPrivateFieldGet(Chart, _a, "f", _Chart_adapter).requestDevice();
+    const device = await __classPrivateFieldGet(_a, _a, "f", _Chart_adapter).requestDevice();
     const presentation_format = navigator.gpu.getPreferredCanvasFormat();
     __classPrivateFieldGet(this, _Chart_context, "f").configure({
         device,
@@ -1235,4 +1235,5 @@ fn main() -> @location(0) vec4f {
     return round_up(value, multiple);
 };
 _Chart_adapter = { value: null };
+export default Chart;
 //# sourceMappingURL=chart.js.map
